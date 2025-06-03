@@ -17,9 +17,8 @@ CREATE TYPE tag AS ENUM (
 
 CREATE TYPE exchange_status AS ENUM (
     'Requested',
-    'Accepted',
     'Declined',
     'Active',
     'Completed',
-    'Canceled'
+    'Cancelled'
 );
