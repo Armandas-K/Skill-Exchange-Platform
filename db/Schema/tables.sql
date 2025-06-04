@@ -1,4 +1,4 @@
-CREATE TABLE user (
+CREATE TABLE account (
     account_id SERIAL PRIMARY KEY,
     email VARCHAR UNIQUE NOT NULL,
     password VARCHAR NOT NULL, --hashed
@@ -9,7 +9,7 @@ CREATE TABLE user (
 
 CREATE TABLE skill_profile (
     profile_id SERIAL PRIMARY KEY,
-    account_id INT REFERENCES user(account_id) ON DELETE CASCADE NOT NULL,
+    account_id INT REFERENCES account(account_id) ON DELETE CASCADE NOT NULL,
     name VARCHAR NOT NULL,
     location VARCHAR, --optional / out of scope
     reputation_points INT DEFAULT 0 NOT NULL,
@@ -21,10 +21,10 @@ CREATE TABLE skill_profile (
 --but table definition might be a bit ambiguous
 CREATE TABLE qualification (
     qualification_id SERIAL PRIMARY KEY,
-    account_id INT REFERENCES users(account_id) ON DELETE CASCADE NOT NULL,
+    account_id INT REFERENCES account(account_id) ON DELETE CASCADE NOT NULL,
     qualification_title VARCHAR NOT NULL,
-    start DATE NOT NULL,
-    end DATE, --NULL for ongoing
+    start_end DATE NOT NULL,
+    end_end DATE, --NULL for ongoing
     institution VARCHAR, --NULL for self taught?
     verified BOOLEAN DEFAULT FALSE --maybe out of scope for now
 );
