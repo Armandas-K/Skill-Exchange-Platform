@@ -1,6 +1,8 @@
 const express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
 const path = require('path');
 require('dotenv').config();
 
@@ -26,6 +28,85 @@ pool.query('SELECT NOW()', (err, res) => {
 });
 
 // -------------------- Routes --------------------
+//login route
+app.use(session({
+  secret: 'secret', 
+  resave: false,
+  saveUninitialized: false,
+  cookie: { 
+    secure: false,  
+    maxAge: 24 * 60 * 60 * 1000 
+  }
+}));
+
+//registration 
+app.post('/api/register', async (req, res) => {
+  const { email, password, language } = req.body;
+
+  if (!email || !password || !language) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const existingUser = await pool.query('SELECT * FROM account WHERE email = $1', [email]);
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({ error: 'Account with this email already exists' });
+    }
+
+    // const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(`
+      INSERT INTO account (email, password, preferences, language)
+      VALUES ($1, $2, '{}', $3)
+    `, [email, password, language]);
+
+    res.json({ message: 'Registration successful' });
+
+  } catch (err) {
+    console.error('Error during registration:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const result = await pool.query('SELECT * FROM account WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const user = result.rows[0];
+
+    if (password !== user.password) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    req.session.userId = user.account_id;
+
+    res.json({ message: 'Login successful' });
+
+  } catch (err) {
+    console.error('Database error during login:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/api/session', (req, res) => {
+  if (req.session.userId) {
+    res.json({ loggedIn: true, userId: req.session.userId });
+  } else {
+    res.json({ loggedIn: false });
+  }
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy();
+  res.json({ message: 'Logged out' });
+});
 
 //Fetch profile by ID
 app.get('/api/profile/:id', async (req, res) => {
