@@ -80,6 +80,33 @@ app.get('/api/profiles', async (req, res) => {
   }
 });
 
+
+//search profiles name or skill
+app.get('/api/search', async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    const result = await pool.query(`
+      SELECT 
+        p.profile_id,
+        p.name,
+        p.reputation_points,
+        array_to_json(p.languages) AS languages,
+        array_agg(s.skill) AS skills
+      FROM skill_profile p
+      LEFT JOIN skill_listing s ON p.profile_id = s.profile_id
+      WHERE p.name ILIKE $1 OR s.skill ILIKE $1
+      GROUP BY p.profile_id
+    `, [`%${query}%`]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error searching profiles:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
 // -------------------- Server Start --------------------
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

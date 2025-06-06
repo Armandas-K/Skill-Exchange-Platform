@@ -5,6 +5,13 @@
     <link rel="stylesheet" href="styles2.css"/>
     <link rel="icon" href="assets\makers_valley.png" type="image/png">
 </head>
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <h2>Search Results</h2>
+            <div id="search-results"></div>
+        </div>
+    </div>    
     <body>
         <header>
             <h1>MakersLink</h1>
@@ -12,9 +19,13 @@
                 <div class="topnav">
                     <a href="index.html">Home</a>
                     <a href="jobs.html">Upload</a>
-                    <a href="#">View Listings</a> <!--will be updated when html is created-->
-                    <a href="#">Profile</a> <!--will be updated when html is created-->
-                    <input type="text" placeholder="Search...">
+                    <a href="#">View Listings</a>
+                    <a href="#">Profile</a>
+
+                    <form id="searchForm" style="display:inline;">
+                        <input type="text" id="searchInput" placeholder="Search...">
+                        <button type="submit">Go</button>
+                    </form>
                 </div>
             </nav>
         </header>
