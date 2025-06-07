@@ -48,6 +48,10 @@ button:hover {
     border-radius: 6px;
     color: #ffffff;
 }
+.cancelbtn a:hover {
+    background-color: #d1382d;
+    color: #ffffff;
+}
 
 /* .imgcontainer {
     text-align: center;

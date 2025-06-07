@@ -4,21 +4,37 @@
     <title>MakersLink - Skills Exchange</title>
     <link rel="stylesheet" href="styles1.css"/>
     <link rel="icon" href="assets\makers_valley.png" type="image/png">
+    <script>
+        function handleLogin(event) {
+            event.preventDefault(); //stops form from submitting
+
+            const username = document.getElementById('uname').value;
+            const password = document.getElementById('psw').value;
+
+            const validUsername = "x_lebo_x"
+            const validPassword = "password123"
+
+            if (username === validUsername && password === validPassword) {
+                window.location.href = "index.html";
+            } else {
+                alert("Incorrect username or password.");
+            }
+        }
+    </script>
 </head>
 
 
 <body>
-    <form action="action_page.php" method="post">
+    <form id="loginForm" onsubmit="handleLogin(event)">
     <!-- <div class="imgcontainer">
         <img src="img_avatar2.png" alt="Avatar" class="avatar">
     </div> -->
-
     <div class="container">
         <label for="uname"><b>Username</b></label>
-        <input type="text" placeholder="Enter Username" name="uname" required>
+        <input type="text" placeholder="Enter Username" name="uname" id="uname" required>
 
         <label for="psw"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="psw" required>
+        <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
 
         <button type="submit">Login</button>
         <label>
@@ -28,7 +44,7 @@
 
     <div class="container" style="background-color:#f1f1f1">
         <button type="button" class="cancelbtn">Cancel</button>
-        <span class="psw">Forgot <a href="#">password?</a></span>
+        <span class="psw"><a href="#">Forgot password?</a></span>
     </div>
     </form>
 </body>
