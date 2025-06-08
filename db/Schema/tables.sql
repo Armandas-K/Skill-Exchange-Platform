@@ -23,8 +23,8 @@ CREATE TABLE qualification (
     qualification_id SERIAL PRIMARY KEY,
     account_id INT REFERENCES account(account_id) ON DELETE CASCADE NOT NULL,
     qualification_title VARCHAR NOT NULL,
-    start_end DATE NOT NULL,
-    end_end DATE, --NULL for ongoing
+    start_date DATE NOT NULL,
+    end_date DATE, --NULL for ongoing
     institution VARCHAR, --NULL for self taught?
     verified BOOLEAN DEFAULT FALSE --maybe out of scope for now
 );
