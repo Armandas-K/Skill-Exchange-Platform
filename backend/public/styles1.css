@@ -14,7 +14,11 @@ form {
     padding: 2rem;
 }
 
-input[type=text], input[type=password] {
+h2 {
+    text-align: center;
+}
+
+input[type=email], input[type=password] {
     width: 100%;
     padding: 12px 20px;
     margin: 10px 0;
@@ -38,7 +42,7 @@ button {
 }
 
 button:hover {
-    backgrond-color: #218c3c;
+    background-color: #218c3c;
 }
 
 .cancelbtn {

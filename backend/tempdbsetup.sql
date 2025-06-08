@@ -73,6 +73,7 @@ CREATE TABLE review (
 
 -- Accounts
 INSERT INTO account (email, password, language) VALUES
+('admin@gmail.com', 'admin', '{}', 'English'),
 ('lebo@example.com', 'hashed_password', 'English'),
 ('jane@example.com', 'hashed_password', 'English'),
 ('musa@example.com', 'hashed_password', 'Zulu'),

@@ -18,6 +18,19 @@ function showMessage(msg) {
 }
 
 // -------------------- Load Profiles --------------------
+// check login
+window.addEventListener('load', async () => {
+  const res = await fetch('/api/session');
+  const data = await res.json();
+
+  if (!data.loggedIn) {
+    // Redirect to login page if not logged in
+    window.location.href = 'login.html';
+  } else {
+    console.log("Logged in as user:", data.userId);
+  }
+});
+
 async function loadProfiles() {
   try {
     const res = await fetch(PROFILES_API_URL);

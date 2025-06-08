@@ -3,50 +3,64 @@
 <head>
     <title>MakersLink - Skills Exchange</title>
     <link rel="stylesheet" href="styles2.css"/>
-    <link rel="icon" href="assets\makers_valley.png" type="image/png">
+    <link rel="icon" href="assets/makers_valley.png" type="image/png">
 </head>
+
+<body>
     <div id="searchModal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="closeModal">&times;</span>
             <h2>Search Results</h2>
             <div id="search-results"></div>
         </div>
-    </div>    
-    <body>
-        <header>
-            <h1>MakersLink</h1>
-            <nav>
-                <div class="topnav">
-                    <a href="index.html">Home</a>
-                    <a href="jobs.html">Upload</a>
-                    <a href="#">View Listings</a>
-                    <a href="#">Profile</a>
+    </div>
 
-                    <form id="searchForm" style="display:inline;">
-                        <input type="text" id="searchInput" placeholder="Search...">
-                        <button type="submit">Go</button>
-                    </form>
-                </div>
-            </nav>
-        </header>
-    
-        <main>
+    <header>
+        <h1>MakersLink</h1>
+        <div class="header-profile">
+            <img src="assets/lebo.jpg" alt="pfp" class="header-pfp" />
+        </div>
+        <nav>
+            <div class="topnav">
+                <a href="index.html" class="active">Home</a>
+                <a href="jobs.html">Upload</a>
+                <a href="#">View Listings</a>
+                <a href="#">Profile</a>
+
+                <form id="searchForm" class="search-wrapper">
+                    <input type="text" id="searchInput" class="search-wrapper" placeholder="Search...">
+                    <button type="submit">Go</button>
+                </form>
             </div>
-            <div class="container">
-                <section class="content">
-                    <h2>Conect with the people of MakersValley</h2>
-                    <p>Helping individuals in Makers Valley find jobs to sustain their needs</p>
-                    <p><iframe src="https://www.google.com/maps/d/embed?mid=1GGQyruUqQx6KKSNM6n_d6VxshMVPz6I2&ehbc=2E312F" width="640" height="480"></iframe></p> <!-- taken from https://www.youtube.com/watch?v=KIC0OK9nKXY -->
-                </section>
+        </nav>
+    </header>
 
-                <div id="profiles-container" class="profiles-grid"></div>
-            </div>
-        </main>
+    <main>
+        <div class="container">
+            <section class="content">
+                <h2>Connect with the people of MakersValley</h2>
+                <p>Helping individuals in Makers Valley find jobs to sustain their needs</p>
+                <iframe src="https://www.google.com/maps/d/embed?mid=1GGQyruUqQx6KKSNM6n_d6VxshMVPz6I2&ehbc=2E312F" width="640" height="480"></iframe>
+            </section>
 
-        <footer>
-            <p>2025 UEA synoptic stuff</p>
-        </footer>
-        <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
-        <script src="app.js"></script>
-    </body>
+            <aside class="profile">
+                <img src="assets/lebo.jpg" alt="pfp" class="profile-pic" />
+                <h3>Your Profile</h3>
+                <p><strong>Name:</strong> Lebo B.</p>
+                <p><strong>Skills:</strong> Hair Braiding, Sewing</p>
+                <p><strong>Rating:</strong> ★★★★☆</p>
+                <button>Edit Profile</button>
+            </aside>
+
+            <div id="profiles-container" class="profiles-grid"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>2025 UEA synoptic stuff</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
+    <script src="app.js"></script>
+</body>
 </html>
