@@ -147,8 +147,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION create_exchange(
-    p_skill_id_1 INT,
-    p_skill_id_2 INT,
+    p_skill_id_1 INT, --requester
+    p_skill_id_2 INT, --recipient
     p_location VARCHAR,
     p_date_start TIMESTAMP,
     p_date_end TIMESTAMP
@@ -202,5 +202,23 @@ BEGIN
     RETURNING exchange_id INTO new_exchange_id;
 
     RETURN new_exchange_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION accept_exchange(
+    p_exchange_id INT,
+    p_profile_id INT
+) RETURNS VARCHAR AS $$
+BEGIN
+    RETURN update_exchange_status(p_exchange_id, p_profile_id, 'accept');
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION decline_exchange(
+    p_exchange_id INT,
+    p_profile_id INT
+) RETURNS VARCHAR AS $$
+BEGIN
+    RETURN update_exchange_status(p_exchange_id, p_profile_id, 'decline');
 END;
 $$ LANGUAGE plpgsql;
