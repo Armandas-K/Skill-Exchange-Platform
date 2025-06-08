@@ -18,7 +18,9 @@ h2 {
     text-align: center;
 }
 
-input[type=email], input[type=password] {
+
+
+input[type=email], input[type=password], #language {
     width: 100%;
     padding: 12px 20px;
     margin: 10px 0;
