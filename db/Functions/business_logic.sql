@@ -54,12 +54,38 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION add_qualification(
     p_account_id INT,
     p_title VARCHAR,
-    p_start DATE,
-    p_end DATE DEFAULT NULL,
+    p_start_date DATE,
+    p_end_date DATE DEFAULT NULL,
     p_institution VARCHAR DEFAULT NULL,
     p_verified BOOLEAN DEFAULT FALSE
 ) RETURNS VOID AS $$
+DECLARE
+    new_qualification_id INT;
+    account_exists BOOLEAN;
 BEGIN
+    --validate account exists
+    SELECT EXISTS (
+        SELECT 1 FROM account WHERE account_id = p_account_id
+    ) INTO account_exists;
+
+    IF NOT account_exists THEN
+        RAISE EXCEPTION 'account id % does not exist', p_account_id;
+    END IF;
+
+    --validate start date
+    IF p_start_date > CURRENT_DATE THEN
+        RAISE EXCEPTION 'Start date (%) cannot be in the future', p_start_date;
+    END IF;
+
+    --also validate end date if given
+    IF p_end_date IS NOT NULL THEN
+        IF p_end_date < p_start_date THEN
+            RAISE EXCEPTION 'End date (%) must be after start date (%).', p_end_date, p_start_date;
+        ELSIF p_end_date > CURRENT_DATE THEN
+            RAISE EXCEPTION 'End date (%) cannot be in the future.', p_end_date;
+        END IF;
+    END IF;
+
     INSERT INTO qualification (
         account_id,
         qualification_title,
@@ -75,6 +101,9 @@ BEGIN
         p_institution,
         p_verified
     );
+    RETURNING qualification_id INTO new_qualification_id;
+
+    RETURN new_qualification_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -87,7 +116,17 @@ CREATE OR REPLACE FUNCTION create_skill_listing(
 ) RETURNS INT AS $$
 DECLARE
     new_skill_id INT;
+    profile_exists BOOLEAN;
 BEGIN
+    --validate profile exists
+    SELECT EXISTS (
+        SELECT 1 FROM skill_profile WHERE profile_id = p_profile_id
+    ) INTO profile_exists;
+
+    IF NOT profile_exists THEN
+        RAISE EXCEPTION 'profile id % does not exist', p_profile_id;
+    END IF;
+
     INSERT INTO skill_listing (
         profile_id,
         skill,
@@ -108,8 +147,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION create_exchange(
-    p_profile_id_1 INT,
-    p_profile_id_2 INT,
     p_skill_id_1 INT,
     p_skill_id_2 INT,
     p_location VARCHAR,
@@ -118,7 +155,33 @@ CREATE OR REPLACE FUNCTION create_exchange(
 ) RETURNS INT AS $$
 DECLARE
     new_exchange_id INT;
+    profile_id_1 INT;
+    profile_id_2 INT;
 BEGIN
+
+    --get profile ids from skill ids
+    SELECT profile_id INTO profile_id_1 FROM skill_listing WHERE skill_id = p_skill_id_1;
+    IF profile_id_1 IS NULL THEN
+        RAISE EXCEPTION 'skill id % not found', p_skill_id_1;
+    END IF;
+
+    SELECT profile_id INTO profile_id_2 FROM skill_listing WHERE skill_id = p_skill_id_2;
+    IF profile_id_2 IS NULL THEN
+        RAISE EXCEPTION 'skill id % not found', p_skill_id_2;
+    END IF;
+
+    --validate profiles are different
+    IF p_profile_id_1 = p_profile_id_2 THEN
+        RAISE EXCEPTION 'cannot create exchange with same profile id %', p_profile_id_1;
+    END IF;
+
+    --validate dates
+    IF p_date_start <= now() THEN
+        RAISE EXCEPTION 'start date must be in the future';
+    ELSIF p_date_end <= p_date_start THEN
+        RAISE EXCEPTION 'end date must be after start date';
+    END IF;
+
     INSERT INTO exchange (
         profile_id_1,
         profile_id_2,
