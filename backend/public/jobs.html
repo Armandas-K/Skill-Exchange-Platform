@@ -26,7 +26,24 @@
                 <button type="submit" class="button">Post</button>
             </form>
         </main>
+        <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeLoginModal">&times;</span>
+            <h2>Login</h2>
 
+            <form id="loginForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+
+            <button type="submit">Login</button>
+            </form>
+
+            <p id="loginMessage"></p>
+        </div>
+        </div>
         <footer>
             <p>2025 UEA synoptic stuff</p>
         </footer>
