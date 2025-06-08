@@ -3,6 +3,7 @@
 <head>
     <title>MakersLink - Skills Exchange</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/i18next@21.6.14/dist/umd/i18next.min.js"></script>
     <link rel="stylesheet" href="index.css"/>
     <link rel="icon" href="assets/makers_valley.png" type="image/png">
 </head>
@@ -40,6 +41,10 @@
                 <div class="nav-right">
                     <button id="openLoginModal">Login</button>
                     <button id="openRegisterModal">Register</button>
+                    <select id="languageSelector">
+                    <option value="en">EN</option>
+                    <option value="fr">FR</option>
+                    </select>
                 </div>
             </div>
         </nav>
@@ -134,5 +139,6 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
     <script src="app.js"></script>
+    <script src="i18n.js"></script>
 </body>
 </html>
