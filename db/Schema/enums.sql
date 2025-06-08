@@ -8,11 +8,38 @@ CREATE TYPE language AS ENUM (
 );
 
 CREATE TYPE tag AS ENUM (
-    'Programming',
+    --some academic subjects
     'Maths',
-    'Writing',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'Economics',
+    'Business',
+    'History',
+    'Geography',
+    'Politics',
+    'Psychology',
+    'Philosophy',
+    'Art',
     'Music',
-    'Business'
+    'Programming',
+    'IT',
+    'Engineering',
+    --more practical skills
+    'Languages',
+    'DIY',
+    'Carpentry',
+    'Plumbing',
+    'Electrical',
+    'Cooking',
+    'Gardening',
+    'Mechanics',
+    'Crafts',
+    'Design',
+    'Life_Skills',
+    'Personal_Finance',
+    'Fitness',
+    'First_Aid'
 );
 
 CREATE TYPE exchange_status AS ENUM (
