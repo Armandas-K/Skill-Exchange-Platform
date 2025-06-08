@@ -222,3 +222,71 @@ BEGIN
     RETURN update_exchange_status(p_exchange_id, p_profile_id, 'decline');
 END;
 $$ LANGUAGE plpgsql;
+
+--all parameters optional, no params returns all skills
+CREATE OR REPLACE FUNCTION search_skill_listings(
+    p_tag tag DEFAULT NULL,
+    p_language language DEFAULT NULL,
+    p_skill_title VARCHAR DEFAULT NULL
+) RETURNS INT[] AS $$
+DECLARE
+    skill_ids INT[];
+BEGIN
+    SELECT ARRAY(
+        SELECT s.skill_id
+        FROM skill_listing s
+        WHERE
+            (
+                --if tag given, must be present in array
+                p_tag IS NULL OR
+                p_tag = ANY(s.tags)
+            )
+            AND (
+                --if language given, must be present in array
+                p_language IS NULL OR
+                p_language = ANY(s.languages)
+            )
+            AND (
+                --if title given, must contain title
+                p_skill_title IS NULL OR
+                s.skill ILIKE '%' || p_skill_title || '%'
+            )
+    ) INTO skill_ids;
+
+    RETURN skill_ids;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_skill_details(
+    p_skill_id INT
+) RETURNS TABLE (
+    profile_name VARCHAR,
+    location VARCHAR,
+    reputation_points INT,
+    skill_title VARCHAR,
+    description VARCHAR,
+    languages language[],
+    tags tag[]
+) AS $$
+BEGIN
+    --validate if skill exists
+    IF NOT EXISTS (
+        SELECT 1 FROM skill_listing WHERE skill_id = p_skill_id
+    ) THEN
+        RAISE EXCEPTION 'skill id % does not exist.', p_skill_id;
+    END IF;
+
+    RETURN QUERY
+    SELECT
+        sp.name,
+        sp.location,
+        sp.reputation_points,
+        sl.skill,
+        sl.description,
+        sl.languages,
+        sl.tags
+    FROM skill_listing sl
+    JOIN skill_profile sp ON sp.profile_id = sl.profile_id
+    WHERE sl.skill_id = p_skill_id;
+END;
+$$ LANGUAGE plpgsql;
