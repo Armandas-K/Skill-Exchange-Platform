@@ -47,7 +47,6 @@ async function loadProfiles() {
     data.forEach(profile => {
       const card = document.createElement("div");
       card.className = "profile-card";
-
       card.innerHTML = `
         <div class="card-header">
           <img src="assets/default_profile.png" alt="Profile Picture" class="profile-card-img" />
@@ -57,16 +56,66 @@ async function loadProfiles() {
           <p><strong>Skills:</strong> ${profile.skills?.join(", ") || 'N/A'}</p>
           <p><strong>Languages:</strong> ${profile.languages?.join(", ") || 'N/A'}</p>
           <p><strong>Reputation:</strong> ${profile.reputation_points ?? 0}</p>
+          <p><strong>Skills:</strong> ${profile.skills?.join(", ") || 'N/A'}</p>
+          <p><strong>Languages:</strong> ${profile.languages?.join(", ") || 'N/A'}</p>
+          <button class="request-skill-btn"
+            data-profile-id="${profile.profile_id}"
+            data-skills='${JSON.stringify(profile.skills_ids)}'>Request Exchange</button>
         </div>
       `;
-
       container.appendChild(card);
+    });
+
+    document.querySelectorAll('.request-skill-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const toProfileId = e.target.dataset.profileId;
+
+        try {
+          const [targetRes, myRes] = await Promise.all([
+            fetch(`/api/profile/skills/${toProfileId}`),
+            fetch('/api/profile')
+          ]);
+
+          const targetSkills = await targetRes.json();
+          const myProfile = await myRes.json();
+          console.log('My profile:', myProfile);
+          console.log('Skills:', myProfile.skills);
+
+          const offeredSelect = document.getElementById('offeredSkill');
+          const requestedSelect = document.getElementById('requestedSkill');
+          offeredSelect.innerHTML = '';
+          requestedSelect.innerHTML = '';
+
+          myProfile.skills.forEach(skill => {
+            const option = document.createElement('option');
+            option.value = skill.skill_id;
+            option.textContent = skill.skill;
+            offeredSelect.appendChild(option);
+          });
+
+          targetSkills.forEach(skill => {
+            const option = document.createElement('option');
+            option.value = skill.skill_id;
+            option.textContent = skill.skill;
+            requestedSelect.appendChild(option);
+          });
+
+          offeredSelect.dataset.targetProfileId = toProfileId;
+
+          openModal('exchangeTemplate');
+
+        } catch (err) {
+          console.error("Failed to load skills for exchange:", err);
+          alert("Could not load exchange options.");
+        }
+      });
     });
 
   } catch (err) {
     console.error("Failed to load profiles:", err);
   }
 }
+
 
 // -------------------- Unified Modal Logic --------------------
 const unifiedModal = document.getElementById("unifiedModal");
@@ -130,11 +179,17 @@ document.getElementById('searchForm').addEventListener('submit', async (e) => {
         const card = document.createElement("div");
         card.className = "profile-card";
         card.innerHTML = `
-          <h3>${profile.name}</h3>
-          <p><strong>Skills:</strong> ${profile.skills ? profile.skills.join(", ") : ''}</p>
-          <p><strong>Languages:</strong> ${profile.languages ? profile.languages.join(", ") : ''}</p>
+          <div class="card-header">
+            <img src="assets/default_profile.png" alt="Profile Picture" class="profile-card-img" />
+            <h3>${profile.name}</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>Skills:</strong> ${profile.skills?.join(", ") || 'N/A'}</p>
+            <p><strong>Languages:</strong> ${profile.languages?.join(", ") || 'N/A'}</p>
+            <p><strong>Reputation:</strong> ${profile.reputation_points ?? 0}</p>
+            <button onclick="requestExchange(${profile.profile_id})">Request Exchange</button>
+          </div>
         `;
-        resultsContainer.appendChild(card);
       });
     }
 
@@ -286,7 +341,40 @@ async function loadProfileIntoForm() {
   }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const exchangeForm = document.getElementById('exchangeForm');
+  if (exchangeForm) {
+    exchangeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
+      const to_profile_id = document.getElementById('offeredSkill').dataset.targetProfileId;
+      const skill_id_1 = document.getElementById('offeredSkill').value;
+      const skill_id_2 = document.getElementById('requestedSkill').value;
+
+      try {
+        const res = await fetch('/api/exchange/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to_profile_id, skill_id_1, skill_id_2 })
+        });
+
+        const data = await res.json();
+        const msg = document.getElementById('exchangeMessage');
+
+        if (res.ok) {
+          msg.textContent = "Exchange request sent!";
+          setTimeout(() => unifiedModal.style.display = 'none', 1500);
+        } else {
+          msg.textContent = data.error || "Error sending exchange request.";
+        }
+
+      } catch (err) {
+        console.error('Exchange request error:', err);
+        document.getElementById('exchangeMessage').textContent = 'Server error';
+      }
+    });
+  }
+});
 // -------------------- Offline Handling --------------------
 async function saveOffline(data) {
   const db = await dbPromise;
