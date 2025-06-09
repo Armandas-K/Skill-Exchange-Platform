@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Skills - MakersLink</title>
+    <title>View Listings - MakersLink</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/i18next@21.6.14/dist/umd/i18next.min.js"></script>
+    <!-- <script src="https://unpkg.com/i18next@21.6.14/dist/umd/i18next.min.js"></script> -->
     <link rel="stylesheet" href="index.css"/>
     <link rel="icon" href="assets/makers_valley.png" type="image/png">
 </head>
 
 <body>
-    <!-- Unified Modal -->
     <div id="unifiedModal" class="modal">
         <div class="modal-content">
             <span class="close-button" id="closeUnifiedModal">&times;</span>
@@ -20,7 +19,7 @@
     <!-- header -->
     <header>
         <div class="header-container">
-            <h1>Upload a Listing</h1>
+            <h1>View Listings - MakersLink</h1>
             <div class="header-profile">
                 <img src="assets/lebo.jpg" alt="Profile Picture" class="header-pfp" id="openProfileModal" />
             </div>
@@ -30,8 +29,8 @@
             <div class="topnav">
                 <div class="nav-left">
                     <a href="index.html">Home</a>
-                    <a href="jobs.html" class="active">Upload</a>
-                    <a href="view.html">View Listings</a>
+                    <a href="jobs.html">Upload</a>
+                    <a href="view.html" class="active">View Listings</a>
                     <a href="#">Profile</a>
                     <form id="searchForm" class="search-wrapper">
                         <input type="text" id="searchInput" placeholder="Search...">
@@ -49,34 +48,15 @@
             </div>
         </nav>
     </header>
-    
-        <main>
-            <form id="jobform">
-                <label>Title: <input type="text" id="title" required</label><br><br> <!--title of job submission-->
-                <label>Description:<br><textarea id="desc" required></textarea></label><br><br> <!--description of job-->
-                <button type="submit" class="button">Post</button>
-            </form>
-        </main>
-        <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" id="closeLoginModal">&times;</span>
-            <h2>Login</h2>
 
-            <form id="loginForm">
-            <label for="email">Email:</label>
-            <input type="email" id="email" required>
+    <!-- footer -->
+    <footer>
+        <p>© 2025 MakersLink - UEA Synoptic Project</p>
+    </footer>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" required>
-
-            <button type="submit">Login</button>
-            </form>
-
-            <p id="loginMessage"></p>
-        </div>
-        </div>
-        <footer>
-            <p>2025 UEA synoptic stuff</p>
-        </footer>
-    </body>
+    <!-- script links -->
+    <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
+    <!-- <script src="app.js"></script> -->
+    <!-- <script src="i18n.js"></script> -->
+</body>
 </html>
