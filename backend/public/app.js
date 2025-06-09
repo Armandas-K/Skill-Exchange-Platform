@@ -23,11 +23,18 @@ window.addEventListener('load', async () => {
   const data = await res.json();
 
   if (!data.loggedIn) {
-    window.location.href = 'login.html';
+    openModal("loginTemplate");
   } else {
     console.log("Logged in as user:", data.userId);
+    loadProfiles();
+
+    if (navigator.onLine) {
+      syncPending();
+    }
   }
 });
+
+
 
 async function loadProfiles() {
   try {
@@ -74,11 +81,15 @@ function openModal(templateId) {
   if (templateId === "loginTemplate") {
     attachLoginFormHandler();
   }
-
   if (templateId === "registerTemplate") {
     attachRegisterFormHandler();
   }
+  if (templateId === "editProfileTemplate") {
+    attachEditProfileFormHandler();
+    loadProfileIntoForm(); 
+  }
 }
+
 
 closeUnifiedBtn.addEventListener('click', () => {
   unifiedModal.style.display = 'none';
@@ -94,7 +105,11 @@ window.addEventListener('click', (event) => {
 document.getElementById("openLoginModal").addEventListener('click', () => openModal("loginTemplate"));
 document.getElementById("openProfileModal").addEventListener('click', () => openModal("profileTemplate"));
 document.getElementById("openRegisterModal").addEventListener('click', () => openModal("registerTemplate"));
-
+document.addEventListener('click', function(e) {
+  if (e.target && e.target.id === 'openEditProfileModal') {
+    openModal('editProfileTemplate');
+  }
+});
 // -------------------- Search --------------------
 document.getElementById('searchForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -225,6 +240,52 @@ function attachRegisterFormHandler() {
     }
   });
 }
+
+//edit profile
+function attachEditProfileFormHandler() {
+  document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('editName').value;
+    const skills = document.getElementById('editSkills').value.split(',').map(s => s.trim());
+    const languages = document.getElementById('editLanguages').value.split(',').map(l => l.trim());
+
+    try {
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, skills, languages })
+      });
+
+      const data = await res.json();
+      const messageContainer = document.getElementById('editProfileMessage');
+
+      if (res.ok) {
+        messageContainer.textContent = "Profile updated!";
+        loadProfiles(); // Refresh profiles list after update
+      } else {
+        messageContainer.textContent = data.error;
+      }
+    } catch (err) {
+      console.error('Edit profile error:', err);
+      document.getElementById('editProfileMessage').textContent = 'Server error';
+    }
+  });
+}
+
+async function loadProfileIntoForm() {
+  try {
+    const res = await fetch('/api/profile');
+    const data = await res.json();
+
+    document.getElementById('editName').value = data.name;
+    document.getElementById('editSkills').value = data.skills.join(", ");
+    document.getElementById('editLanguages').value = data.languages.join(", ");
+  } catch (err) {
+    console.error("Failed to load profile data", err);
+  }
+}
+
 
 // -------------------- Offline Handling --------------------
 async function saveOffline(data) {

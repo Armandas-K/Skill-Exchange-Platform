@@ -139,6 +139,88 @@ app.get('/api/profile/:id', async (req, res) => {
   }
 });
 
+//Fetch specific profile
+app.get('/api/profile', async (req, res) => {
+  const userId = req.session.userId;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+
+  try {
+    // First, get profile_id by account_id
+    const profileResult = await pool.query('SELECT profile_id FROM skill_profile WHERE account_id = $1', [userId]);
+
+    if (profileResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    const profileId = profileResult.rows[0].profile_id;
+
+    const result = await pool.query(`
+      SELECT 
+        p.profile_id, 
+        p.name, 
+        p.reputation_points, 
+        array_to_json(p.languages) AS languages, 
+        array_agg(s.skill) AS skills
+      FROM skill_profile p
+      LEFT JOIN skill_listing s ON p.profile_id = s.profile_id
+      WHERE p.profile_id = $1
+      GROUP BY p.profile_id;
+    `, [profileId]);
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    console.error('Database error (GET /api/profile):', err.stack);
+    res.status(500).send('Server error');
+  }
+});
+
+//PUT profile
+app.put('/api/profile', async (req, res) => {
+  const userId = req.session.userId;
+  const { name, skills, languages } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+
+  try {
+    const profileResult = await pool.query('SELECT profile_id FROM skill_profile WHERE account_id = $1', [userId]);
+
+    if (profileResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+
+    const profileId = profileResult.rows[0].profile_id;
+
+    // Update name and languages
+    await pool.query(`
+      UPDATE skill_profile
+      SET name = $1, languages = $2
+      WHERE profile_id = $3
+    `, [name, languages, profileId]);
+
+    // Update skills: remove old skills, insert new ones
+    await pool.query('DELETE FROM skill_listing WHERE profile_id = $1', [profileId]);
+
+    for (const skill of skills) {
+      await pool.query(`
+        INSERT INTO skill_listing (profile_id, skill)
+        VALUES ($1, $2)
+      `, [profileId, skill]);
+    }
+
+    res.json({ message: 'Profile updated successfully' });
+
+  } catch (err) {
+    console.error('Database error (PUT /api/profile):', err.stack);
+    res.status(500).send('Server error');
+  }
+});
+
 //Fetch multiple profiles
 app.get('/api/profiles', async (req, res) => {
   try {
