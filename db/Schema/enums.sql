@@ -1,5 +1,6 @@
 CREATE TYPE language AS ENUM (
     'English',
+    'French',
     'Zulu',
     'Sesotho',
     'Setswana',
