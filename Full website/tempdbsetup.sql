@@ -211,9 +211,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- --------------------
--- Test Data (AFTER function definitions!)
--- --------------------
+
+-- Test Data
+
 
 -- Insert accounts (must run after hash_password is defined)
 INSERT INTO account (email, password, preferences, language)
