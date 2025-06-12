@@ -1,3 +1,7 @@
+Open full website directory
+
+
+
 npm install -- install node packages
 
 
